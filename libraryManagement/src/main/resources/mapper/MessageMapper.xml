@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.libraryManagement.mapper.MessageMapper">
+
+    <resultMap type="com.design.libraryManagement.pojo.Message" id="MessageMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="message" column="message" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="adminMessage" column="admin_message" jdbcType="VARCHAR"/>
+        <result property="adminer" column="adminer" jdbcType="VARCHAR"/>
+        <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MessageMap">
+        select
+          id, message, created_at, created_by, admin_message, adminer, updated_at
+        from message
+        where id = #{id}
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into message(message, created_at, created_by, admin_message, adminer, updated_at)
+        values (#{message}, now(), #{createdBy}, #{adminMessage}, #{adminer}, #{updatedAt})
+    </insert>
+        <!--用select进行分页查询-->
+      <select id="getPageListByCondition" resultMap="MessageMap">
+        select *  from message  where created_at is not null
+          <!--留言人搜索 不为空 则进入搜索条件-->
+          <if test="page.key.createdBy != null and page.key.createdBy != ''">
+              and  created_by =  #{page.key.createdBy}
+          </if>
+          <!--留言时间搜索 不为空 则进入搜索条件-->
+          <if test="page.dateTime != null and page.dateTime != ''">
+              and  DATE_FORMAT(created_at,'%Y-%m-%d') like '%' #{page.dateTime} '%'
+          </if>
+            <!--排序 desc是降序-->
+        order by
+        created_at desc
+        <!--分页查询-->
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+     <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(id) as count from message where created_at is not null
+        <!--留言人搜索 不为空 则进入搜索条件-->
+        <if test="page.key.createdBy != null and page.key.createdBy != ''">
+            and  created_by =  #{page.key.createdBy}
+        </if>
+        <!--留言时间搜索 不为空 则进入搜索条件-->
+        <if test="page.dateTime != null and page.dateTime != ''">
+            and  DATE_FORMAT(created_at,'%Y-%m-%d') like '%' #{page.dateTime} '%'
+        </if>
+    </select>
+
+   
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update message
+        <set>
+            <if test="message != null and message != ''">
+                message = #{message},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+            <if test="adminMessage != null and adminMessage != ''">
+                admin_message = #{adminMessage},
+            </if>
+            <if test="adminer != null and adminer != ''">
+                adminer = #{adminer},
+            </if>
+                updated_at =now(),
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from message where id = #{id}
+    </delete>
+
+</mapper>
+

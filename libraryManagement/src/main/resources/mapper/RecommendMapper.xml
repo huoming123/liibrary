@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.libraryManagement.mapper.RecommendMapper">
+
+    <resultMap type="com.design.libraryManagement.pojo.Recommend" id="RecommendMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="bookName" column="book_name" jdbcType="VARCHAR"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+        <result property="autour" column="autour" jdbcType="VARCHAR"/>
+        <result property="press" column="press" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="publishTime" column="publish_time" jdbcType="TIMESTAMP"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="checked" column="checked" jdbcType="INTEGER"/>
+        <result property="isbn" column="ISBN" jdbcType="VARCHAR"/>
+        <result property="images" column="images" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RecommendMap">
+        select
+          id, book_name, reason, autour, press, price, publish_time, created_at, created_by, checked, ISBN, images
+        from recommend
+        where id = #{id}
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into recommend(book_name, reason, autour, press, price, publish_time, created_at, created_by, checked, ISBN, images)
+        values (#{bookName}, #{reason}, #{autour}, #{press}, #{price}, #{publishTime}, now(), #{createdBy},0, #{isbn}, #{images})
+    </insert>
+        <!--用select进行分页查询-->
+      <select id="getPageListByCondition" resultMap="RecommendMap">
+        select *  from recommend where created_at is not null
+          <!--推荐人搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.createdBy != null and page.key.createdBy != ''">
+              and  created_by like '%' #{page.key.createdBy}  '%'
+          </if>
+          <!--推荐人搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.bookName != null and page.key.bookName != ''">
+              and  book_name like '%' #{page.key.bookName}  '%'
+          </if>
+          <!--审核状态搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.checked != null">
+              and  checked =  #{page.key.checked}
+          </if>
+            <!--排序 desc是降序-->
+        order by
+        created_at desc
+        <!--分页查询-->
+      
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+     <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(id) as count from recommend where created_at is not null
+        <!--推荐人搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.createdBy != null and page.key.createdBy != ''">
+            and  created_by like '%' #{page.key.createdBy}  '%'
+        </if>
+        <!--推荐人搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.bookName != null and page.key.bookName != ''">
+            and  book_name like '%' #{page.key.bookName}  '%'
+        </if>
+        <!--审核状态搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.checked != null">
+            and  checked =  #{page.key.checked}
+        </if>
+    </select>
+
+   
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update recommend
+        <set>
+            <if test="bookName != null and bookName != ''">
+                book_name = #{bookName},
+            </if>
+            <if test="reason != null and reason != ''">
+                reason = #{reason},
+            </if>
+            <if test="autour != null and autour != ''">
+                autour = #{autour},
+            </if>
+            <if test="press != null and press != ''">
+                press = #{press},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="publishTime != null">
+                publish_time = #{publishTime},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+            <if test="checked != null">
+                checked = #{checked},
+            </if>
+            <if test="isbn != null and isbn != ''">
+                ISBN = #{isbn},
+            </if>
+            <if test="images != null and images != ''">
+                images = #{images},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from recommend where id = #{id}
+    </delete>
+
+</mapper>
+

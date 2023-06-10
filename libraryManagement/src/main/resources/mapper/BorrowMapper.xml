@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.libraryManagement.mapper.BorrowMapper">
+
+    <resultMap type="com.design.libraryManagement.pojo.Borrow" id="BorrowMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="bookId" column="book_id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="days" column="days" jdbcType="INTEGER"/>
+        <result property="borrowDay" column="borrow_day" jdbcType="INTEGER"/>
+        <result property="overTime" column="over_time" jdbcType="INTEGER"/>
+        <result property="isbn" column="ISBN" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="deletedAt" column="deleted_at" jdbcType="TIMESTAMP"/>
+        <result property="fee" column="fee" jdbcType="NUMERIC"/>
+        <result property="over" column="over" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="images" column="images" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="bookName" column="book_name" jdbcType="VARCHAR"/>
+        <result property="checked" column="checked" jdbcType="INTEGER"/>
+
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BorrowMap">
+        select
+          *
+        from borrow
+        where id = #{id}
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into borrow(book_id, user_id, created_by, days, created_at, deleted_at, fee, over, status,checked)
+        values (#{bookId}, #{userId}, #{createdBy}, #{days}, now(), #{deletedAt}, #{fee}, #{over}, #{status},0)
+    </insert>
+        <!--用select进行分页查询-->
+      <select id="getPageListByCondition" resultMap="BorrowMap">
+        select a.*,b.ISBN,b.book_name,b.images,c.user_name from borrow a ,books b ,users c where a.user_id=c.id and a.book_id=b.id
+          <!--用户id搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.userId != null and page.key.userId != ''">
+              and  a.user_id = #{page.key.userId}
+          </if>
+          <!--用户名搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.userName != null and page.key.userName != ''">
+              and  c.user_name like '%' #{page.key.userName}  '%'
+          </if>
+          <!--图书名称搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.bookName != null and page.key.bookName != ''">
+              and  b.book_name like '%' #{page.key.bookName}  '%'
+          </if>
+          <!--借书时间搜索 如果不为空 则进入搜索条件-->
+          <if test="page.key.createdAt != null and page.key.createdAt != ''">
+              and  a.created_at like '%' #{page.key.createdAt}  '%'
+          </if>
+          <!--是否归还搜索 1为已经归还 如果不为空 则进入搜索条件-->
+          <if test="page.key.back != null and page.key.back ==1">
+              and a.deleted_at is not null
+          </if>
+          <!--是否归还搜索 0为未归还 如果不为空 则进入搜索条件-->
+          <if test="page.key.back != null and page.key.back ==0">
+              and a.deleted_at is  null
+          </if>
+           <!--排序 desc是降序-->
+        order by
+        a.created_at desc
+        <!--分页查询-->
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+     <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(a.id) as count from borrow a ,books b ,users c where a.user_id=c.id and a.book_id=b.id
+        <!--用户id搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.userId != null and page.key.userId != ''">
+            and  a.user_id = #{page.key.userId}
+        </if>
+        <!--用户名搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.userName != null and page.key.userName != ''">
+            and  c.user_name like '%' #{page.key.userName}  '%'
+        </if>
+        <!--图书名称搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.bookName != null and page.key.bookName != ''">
+            and  b.book_name like '%' #{page.key.bookName}  '%'
+        </if>
+        <!--借书时间搜索 如果不为空 则进入搜索条件-->
+        <if test="page.key.createdAt != null and page.key.createdAt != ''">
+            and  a.created_at like '%' #{page.key.createdAt}  '%'
+        </if>
+        <!--是否归还搜索 1为已经归还 如果不为空 则进入搜索条件-->
+        <if test="page.key.back != null and page.key.back ==1">
+            and a.deleted_at is not null
+        </if>
+        <!--是否归还搜索 0为未归还 如果不为空 则进入搜索条件-->
+        <if test="page.key.back != null and page.key.back ==0">
+            and a.deleted_at is  null
+        </if>
+    </select>
+
+   
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update borrow
+        <set>
+            <if test="bookId != null">
+                book_id = #{bookId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+            <if test="days != null">
+                days = #{days},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="deletedAt != null">
+                deleted_at = #{deletedAt},
+            </if>
+            <if test="fee != null">
+                fee = #{fee},
+            </if>
+            <if test="over != null">
+                over = #{over},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="borrowDay != null">
+                borrow_day = #{borrowDay},
+            </if>
+            <if test="overTime != null">
+                over_time = #{overTime},
+            </if>
+            <if test="checked != null">
+                checked = #{checked},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from borrow where id = #{id}
+    </delete>
+    <!--根据用户id图书id查询是否已经借过了-->
+    <select id="queryByUserIdAndbookId" resultMap="BorrowMap">
+        select * from borrow where book_id=#{bookId} and user_id=#{userId} and  deleted_at is null;
+    </select>
+    <!--根据用户id 和书id查看有没有这本书未归还-->
+    <select id="queryByUserIdAndbookIdAndDeletedAt" resultMap="BorrowMap">
+         select * from borrow where book_id=#{bookId} and user_id=#{userId} and deleted_at is null ;
+    </select>
+    <!--根据id去还书-->
+    <update id="returnBook">
+        update borrow set deleted_at=now() where id=#{id}
+    </update>
+    <!--根据用户id 和书id查看 和支付状态查看逾期的图书有没有付费-->
+    <select id="queryByUserIdAndbookIdAndDeletedAtAndStatus" resultMap="BorrowMap">
+              select * from borrow where book_id=#{bookId} and user_id=#{userId} and deleted_at is null and status=0 and over=1;
+    </select>
+    <!--支付把状态改为1-->
+    <update id="pay">
+        update borrow set status =1 where book_id=#{bookId} and user_id=#{userId}
+    </update>
+    <!--续借未归还未逾期的那条图书天数-->
+    <update id="updateByUserIdAndbookIdAndDeletedAt">
+         update borrow set days =#{newDay} where book_id=#{bookId} and user_id=#{userId} and deleted_at is null and over=0;
+    </update>
+    <!--获取未归还的数据 统计借出去多少本书-->
+    <select id="getBorrowList" resultMap="BorrowMap">
+        select * from borrow where deleted_at is null;
+    </select>
+    <!--根据用户id获取未缴费逾期未归还的图书-->
+    <select id="queryByUserId" resultMap="BorrowMap">
+        select * from borrow where deleted_at is null and over =1 and status =0 and user_id=#{userId};
+    </select>
+</mapper>
+

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.libraryManagement.mapper.UsersMapper">
+
+    <resultMap type="com.design.libraryManagement.pojo.Users" id="UsersMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="role" column="role" jdbcType="VARCHAR"/>
+        <result property="images" column="images" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UsersMap">
+        select
+          id, user_name, password, address, created_at, telephone, role, images
+        from users
+        where id = #{id}
+    </select>
+
+    
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into users(user_name, password, address, created_at, telephone, role, images)
+        values (#{userName}, #{password}, #{address}, now(), #{telephone}, #{role}, #{images})
+    </insert>
+
+   
+    <!--通过主键修改数据-->
+    <update id="update">
+        update users
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="telephone != null and telephone != ''">
+                telephone = #{telephone},
+            </if>
+            <if test="role != null and role != ''">
+                role = #{role},
+            </if>
+            <if test="images != null and images != ''">
+                images = #{images},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from users where id = #{id}
+    </delete>
+    <!--根据手机号码获取数据-->
+    <select id="getByTelephone" resultMap="UsersMap">
+        select * from users where telephone=#{telephone};
+    </select>
+    <!--根据手机号码跟角色获取数据-->
+    <select id="getByTelephoneAndRole" resultMap="UsersMap">
+         select * from users where telephone=#{telephone} and role=#{role};
+    </select>
+    <!--用select进行分页查询-->
+    <select id="getPageListByCondition" resultMap="UsersMap">
+        select *  from users where created_at is not null
+        <!--角色搜索 不为空 则进入搜索条件-->
+        <if test="page.key.role != null and page.key.role != ''">
+            and  role  = #{page.key.role}
+        </if>
+        <!--用户名搜索 不为空 则进入搜索条件-->
+        <if test="page.key.userName != null and page.key.userName != ''">
+            and  user_name like '%' #{page.key.userName} '%'
+        </if>
+        <!--手机号码搜索 不为空 则进入搜索条件-->
+        <if test="page.key.telephone != null and page.key.telephone != ''">
+            and  telephone like '%' #{page.key.telephone} '%'
+        </if>
+        <!--排序 desc是降序-->
+        order by
+        created_at desc
+        <!--分页查询-->
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+    <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(id) as count from users where created_at is not null
+        <!--角色搜索 不为空 则进入搜索条件-->
+        <if test="page.key.role != null and page.key.role != ''">
+            and  role  = #{page.key.role}
+        </if>
+        <!--用户名搜索 不为空 则进入搜索条件-->
+        <if test="page.key.userName != null and page.key.userName != ''">
+            and  user_name like '%' #{page.key.userName} '%'
+        </if>
+        <!--手机号码搜索 不为空 则进入搜索条件-->
+        <if test="page.key.telephone != null and page.key.telephone != ''">
+            and  telephone like '%' #{page.key.telephone} '%'
+        </if>
+    </select>
+    <!--获取读者数据 统计数量-->
+    <select id="getUserList" resultMap="UsersMap">
+        select * from users where role ='user';
+    </select>
+</mapper>

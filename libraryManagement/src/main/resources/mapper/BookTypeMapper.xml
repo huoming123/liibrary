@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.libraryManagement.mapper.BookTypeMapper">
+
+    <resultMap type="com.design.libraryManagement.pojo.BookType" id="BookTypeMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BookTypeMap">
+        select
+          id, type, created_at, created_by
+        from book_type
+        where id = #{id}
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into book_type(type, created_at, created_by)
+        values (#{type}, now(), #{createdBy})
+    </insert>
+        <!--用select进行分页查询-->
+      <select id="getPageListByCondition" resultMap="BookTypeMap">
+        select *  from book_type
+            <!--排序 desc是降序-->
+        order by
+        created_at desc
+        <!--分页查询-->
+      
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+     <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(id) as count from book_type   
+    </select>
+
+   
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update book_type
+        <set>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from book_type where id = #{id}
+    </delete>
+   <select id="getTypeList" resultMap="BookTypeMap">
+       select * from book_type where created_at is not null;
+   </select>
+</mapper>
+

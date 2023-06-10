@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.libraryManagement.mapper.BooksMapper">
+
+    <resultMap type="com.design.libraryManagement.pojo.Books" id="BooksMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="bookName" column="book_name" jdbcType="VARCHAR"/>
+        <result property="describ" column="describ" jdbcType="VARCHAR"/>
+        <result property="autour" column="autour" jdbcType="VARCHAR"/>
+        <result property="press" column="press" jdbcType="VARCHAR"/>
+        <result property="region" column="region" jdbcType="VARCHAR"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="isbn" column="ISBN" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="total" column="total" jdbcType="INTEGER"/>
+        <result property="showIn" column="show_in" jdbcType="INTEGER"/>
+        <result property="recommend" column="recommend" jdbcType="INTEGER"/>
+        <result property="images" column="images" jdbcType="VARCHAR"/>
+        <result property="place" column="place" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BooksMap">
+        select
+        *
+        from books
+        where id = #{id}
+    </select>
+
+    
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into books(created_at, book_name, describ, autour, press, region, created_by, ISBN, type, price, total, show_in, recommend, images,place)
+        values (now(), #{bookName}, #{describ}, #{autour}, #{press}, #{region}, #{createdBy}, #{isbn}, #{type}, #{price}, #{total}, 0, #{recommend}, #{images},#{place})
+    </insert>
+
+   
+    <!--通过主键修改数据-->
+    <update id="update">
+        update books
+        <set>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="bookName != null and bookName != ''">
+                book_name = #{bookName},
+            </if>
+            <if test="describ != null and describ != ''">
+                describ = #{describ},
+            </if>
+            <if test="autour != null and autour != ''">
+                autour = #{autour},
+            </if>
+            <if test="press != null and press != ''">
+                press = #{press},
+            </if>
+            <if test="region != null and region != ''">
+                region = #{region},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+            <if test="isbn != null and isbn != ''">
+                ISBN = #{isbn},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="total != null">
+                total = #{total},
+            </if>
+            <if test="showIn != null">
+                show_in = #{showIn},
+            </if>
+            <if test="recommend != null">
+                recommend = #{recommend},
+            </if>
+            <if test="images != null and images != ''">
+                images = #{images},
+            </if>
+            <if test="place != null and place != ''">
+                place = #{place},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from books where id = #{id}
+    </delete>
+    <!--用select进行分页查询-->
+    <select id="getPageListByCondition" resultMap="BooksMap">
+        select *  from books where created_at is not null
+        <!--isbn搜索 不为空 则进入搜索条件-->
+        <if test="page.key.isbn != null and page.key.isbn != ''">
+            and  ISBN  like '%' #{page.key.isbn} '%'
+        </if>
+        <!--书名搜索 不为空 则进入搜索条件-->
+        <if test="page.key.bookName != null and page.key.bookName != ''">
+            and  book_name like '%' #{page.key.bookName} '%'
+        </if>
+        <!--类型搜索 不为空 则进入搜索条件-->
+        <if test="page.key.type != null and page.key.type != ''">
+            and  type = #{page.key.type}
+        </if>
+        <!--是否推荐搜索 不为空 则进入搜索条件-->
+        <if test="page.key.recommend != null ">
+            and  recommend = #{page.key.recommend}
+        </if>
+        <!--是否显示搜索 不为空 则进入搜索条件-->
+        <if test="page.key.showIn != null ">
+            and  show_in = #{page.key.showIn}
+        </if>
+        <!--排序 desc是降序-->
+        order by
+        created_at desc
+        <!--分页查询-->
+
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+    <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(id) as count from books where created_at is not null
+        <!--书名搜索 不为空 则进入搜索条件-->
+        <if test="page.key.bookName != null and page.key.bookName != ''">
+            and  book_name like '%' #{page.key.bookName} '%'
+        </if>
+        <!--类型搜索 不为空 则进入搜索条件-->
+        <if test="page.key.type != null and page.key.type != ''">
+            and  type = #{page.key.type}
+        </if>
+        <!--是否推荐搜索 不为空 则进入搜索条件-->
+        <if test="page.key.recommend != null ">
+            and  recommend = #{page.key.recommend}
+        </if>
+        <!--是否显示搜索 不为空 则进入搜索条件-->
+        <if test="page.key.showIn != null ">
+            and  show_in = #{page.key.showIn}
+        </if>
+    </select>
+    <!--根据isbn获取图书数据-->
+    <select id="getByISBN" resultMap="BooksMap">
+         select * from books where ISBN=#{isbn};
+    </select>
+    <!--根据书名获取图书数据-->
+    <select id="getByBookName" resultMap="BooksMap">
+         select * from books where book_name=#{bookName};
+    </select>
+    <!--获取图书数据 统计库存-->
+    <select id="getBooksList" resultMap="BooksMap">
+        select * from books where  created_at is not null;
+    </select>
+</mapper>
