@@ -2,11 +2,10 @@
 
 #接计算机毕业设计（代码注释详细+做完会录制视频讲解 需要加微信13650154582）
 
-#接计算机毕业设计（代码注释详细+做完会录制视频讲解 需要加微信13650154582）
 
 #b站地址链接：https://www.bilibili.com/video/BV1FG4y1S7zQ/?spm_id_from=333.337.search-card.all.click
 
-#介绍（项目包含源码+开题报告+论文+开题答辩PPT+毕业答辩PPT）(需要完整项目文件加微信13650154582)
+#介绍
 ![Image text](https://github.com/huoming123/liibrary/blob/main/%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE/%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6.png)  
 #项目功能结构图  
 ![Image text](https://github.com/huoming123/liibrary/blob/main/%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE/%E5%8A%9F%E8%83%BD%E5%9B%BE.png)  
@@ -44,8 +43,6 @@
 ![Image text](https://github.com/huoming123/liibrary/blob/main/%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE/%E5%80%9F%E9%98%85%E8%AE%B0%E5%BD%95%20.png)  
 ![Image text](https://github.com/huoming123/liibrary/blob/main/%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE/%E5%85%AC%E5%91%8A.png)  
 
-#接计算机毕业设计（代码注释详细+做完会录制视频讲解 需要加微信13650154582）
 
-#接计算机毕业设计（代码注释详细+做完会录制视频讲解 需要加微信13650154582）
 
 
